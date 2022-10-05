@@ -37,7 +37,19 @@ fn add_tuples(tuple1: Tuple, tuple2: Tuple) -> Tuple {
         z: tuple1.z + tuple2.z,
         w: tuple1.w + tuple2.w,
     };
-    return result;
+    
+    result
+}
+
+fn sub_tuples(tuple1: Tuple, tuple2: Tuple) -> Tuple {
+    let result: Tuple = Tuple {
+        x: tuple1.x - tuple2.x,
+        y: tuple1.y - tuple2.y,
+        z: tuple1.z - tuple2.z,
+        w: tuple1.w - tuple2.w,
+    };
+
+    result
 }
 
 #[cfg(test)]
@@ -80,5 +92,38 @@ mod tests {
         assert_eq!(result.y, 1.0);
         assert_eq!(result.z, 6.0);
         assert_eq!(result.w, 1.0);
+    }
+
+    #[test]
+    fn test_subtract_points() {
+        let point1 = point(3.0, 2.0, 1.0);
+        let point2 = point(5.0, 6.0, 7.0);
+        let result = sub_tuples(point1, point2);
+        assert_eq!(result.x, -2.0);
+        assert_eq!(result.y, -4.0);
+        assert_eq!(result.z, -6.0);
+        assert_eq!(result.w, 0.0);
+    }
+
+    #[test]
+    fn test_subtract_vector_from_point() {
+        let point = point(3.0, 2.0, 1.0);
+        let vector = vector(5.0, 6.0, 7.0);
+        let result = sub_tuples(point, vector);
+        assert_eq!(result.x, -2.0);
+        assert_eq!(result.y, -4.0);
+        assert_eq!(result.z, -6.0);
+        assert_eq!(result.w, 1.0);
+    }
+
+    #[test]
+    fn test_subtract_vectors() {
+        let vector1 = vector(3.0, 2.0, 1.0);
+        let vector2 = vector(5.0, 6.0, 7.0);
+        let result = sub_tuples(vector1, vector2);
+        assert_eq!(result.x, -2.0);
+        assert_eq!(result.y, -4.0);
+        assert_eq!(result.z, -6.0);
+        assert_eq!(result.w, 0.0);
     }
 }
