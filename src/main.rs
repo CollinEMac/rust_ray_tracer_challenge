@@ -52,6 +52,18 @@ fn sub_tuples(tuple1: Tuple, tuple2: Tuple) -> Tuple {
     result
 }
 
+fn negate(tuple: &Tuple) -> Tuple {
+    Tuple { x: -tuple.x, y: -tuple.y, z: -tuple.z, w: -tuple.w }
+}
+
+fn mult_scalar(scalar: f32, tuple: &Tuple) -> Tuple {
+    Tuple { x: scalar * tuple.x, y: scalar * tuple.y, z: scalar * tuple.z, w: scalar * tuple.w }
+}
+
+fn div_scalar(scalar: f32, tuple: &Tuple) -> Tuple {
+    Tuple { x: tuple.x / scalar, y: tuple.y / scalar, z: tuple.z / scalar, w: tuple.w / scalar }
+}
+
 #[cfg(test)]
 mod tests {
     use super:: *;
@@ -125,5 +137,56 @@ mod tests {
         assert_eq!(result.y, -4.0);
         assert_eq!(result.z, -6.0);
         assert_eq!(result.w, 0.0);
+    }
+
+    #[test]
+    fn test_subtracting_a_vector_from_a_zero_vector() {
+        let zero_vector = vector(0.0, 0.0, 0.0);
+        let vector = vector(1.0, -2.0, 3.0);
+        let result = sub_tuples(zero_vector, vector);
+        assert_eq!(result.x, -1.0);
+        assert_eq!(result.y, 2.0);
+        assert_eq!(result.z, -3.0);
+    }
+
+    #[test]
+    fn test_negate_a_tuple() {
+        let tuple : Tuple = Tuple { x: 1.0, y: -2.0, z: 3.0, w: -4.0 };
+        let negated_tuple : Tuple = negate(&tuple);
+
+        assert_eq!(-tuple.x, negated_tuple.x);
+        assert_eq!(-tuple.y, negated_tuple.y);
+        assert_eq!(-tuple.z, negated_tuple.z);
+        assert_eq!(-tuple.w, negated_tuple.w);
+    }
+
+    #[test]
+    fn test_multiply_a_tuple_by_a_scalar() {
+        let tuple : Tuple = Tuple { x: 1.0, y: -2.0, z: 3.0, w: -4.0 };
+        let result : Tuple = mult_scalar(3.5, &tuple);
+        assert_eq!(result.x, 3.5);
+        assert_eq!(result.y, -7.0);
+        assert_eq!(result.z, 10.5);
+        assert_eq!(result.w, -14.0);
+    }
+
+    #[test]
+    fn test_multiply_a_tuple_by_a_fraction() {
+        let tuple : Tuple = Tuple { x: 1.0, y: -2.0, z: 3.0, w: -4.0 };
+        let result : Tuple = mult_scalar(0.5, &tuple);
+        assert_eq!(result.x, 0.5);
+        assert_eq!(result.y, -1.0);
+        assert_eq!(result.z, 1.5);
+        assert_eq!(result.w, -2.0);
+    }
+
+    #[test]
+    fn test_divide_a_tuple_by_a_scalar() {
+        let tuple : Tuple = Tuple { x: 1.0, y: -2.0, z: 3.0, w: -4.0 };
+        let result : Tuple = div_scalar(2.0, &tuple);
+        assert_eq!(result.x, 0.5);
+        assert_eq!(result.y, -1.0);
+        assert_eq!(result.z, 1.5);
+        assert_eq!(result.w, -2.0);
     }
 }
