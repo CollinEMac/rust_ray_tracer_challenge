@@ -64,6 +64,10 @@ fn div_scalar(scalar: f32, tuple: &Tuple) -> Tuple {
     Tuple { x: tuple.x / scalar, y: tuple.y / scalar, z: tuple.z / scalar, w: tuple.w / scalar }
 }
 
+fn magnitude(vector: &Tuple) -> f32 {
+    (vector.x.powf(2.0) + vector.y.powf(2.0) + vector.z.powf(2.0) + vector.w.powf(2.0)).sqrt()
+}
+
 #[cfg(test)]
 mod tests {
     use super:: *;
@@ -188,5 +192,28 @@ mod tests {
         assert_eq!(result.y, -1.0);
         assert_eq!(result.z, 1.5);
         assert_eq!(result.w, -2.0);
+    }
+
+    #[test]
+    fn test_computing_the_magnitude_of_vectors() {
+        let vector1 = vector(1.0, 0.0, 0.0);
+        let result1 = magnitude(&vector1);
+        assert_eq!(result1, 1.0);
+
+        let vector2 = vector(0.0, 1.0, 0.0);
+        let result2 = magnitude(&vector2);
+        assert_eq!(result2, 1.0);
+
+        let vector3 = vector(0.0, 0.0, 1.0);
+        let result3 = magnitude(&vector3);
+        assert_eq!(result3, 1.0);
+
+        let vector4 = vector(1.0, 2.0, 3.0);
+        let result4 = magnitude(&vector4);
+        assert_eq!(result4, 14.0_f32.sqrt());
+
+        let vector5 = vector(-1.0, -2.0, -3.0);
+        let result5 = magnitude(&vector5);
+        assert_eq!(result5, 14.0_f32.sqrt());
     }
 }
