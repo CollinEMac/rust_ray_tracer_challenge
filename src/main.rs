@@ -1,3 +1,5 @@
+#[derive(Debug)]
+#[derive(PartialEq)]
 struct Tuple {
     x: f32,
     y: f32,
@@ -68,6 +70,17 @@ fn magnitude(vector: &Tuple) -> f32 {
     (vector.x.powf(2.0) + vector.y.powf(2.0) + vector.z.powf(2.0) + vector.w.powf(2.0)).sqrt()
 }
 
+fn dot(tuple1: Tuple, tuple2: Tuple) -> f32 {
+    tuple1.x * tuple2.x + tuple1.y * tuple2.y + tuple1.z * tuple2.z + tuple1.w * tuple2.w
+}
+
+fn cross(vector1: &Tuple, vector2: &Tuple) -> Tuple {
+    vector(vector1.y * vector2.z - vector1.z * vector2.y,
+           vector1.z * vector2.x - vector1.x * vector2.z,
+           vector1.x * vector2.y - vector1.y * vector2.x
+        )
+}
+
 #[cfg(test)]
 mod tests {
     use super:: *;
@@ -104,10 +117,7 @@ mod tests {
         let point = point(3.0, -2.0, 5.0);
         let vector = vector(-2.0, 3.0, 1.0);
         let result = add_tuples(point, vector);
-        assert_eq!(result.x, 1.0);
-        assert_eq!(result.y, 1.0);
-        assert_eq!(result.z, 6.0);
-        assert_eq!(result.w, 1.0);
+        assert_eq!(result, Tuple { x: 1.0, y: 1.0, z: 6.0, w: 1.0 });
     }
 
     #[test]
@@ -115,10 +125,7 @@ mod tests {
         let point1 = point(3.0, 2.0, 1.0);
         let point2 = point(5.0, 6.0, 7.0);
         let result = sub_tuples(point1, point2);
-        assert_eq!(result.x, -2.0);
-        assert_eq!(result.y, -4.0);
-        assert_eq!(result.z, -6.0);
-        assert_eq!(result.w, 0.0);
+        assert_eq!(result, Tuple { x: -2.0, y: -4.0, z: -6.0, w: 0.0 });
     }
 
     #[test]
@@ -126,10 +133,7 @@ mod tests {
         let point = point(3.0, 2.0, 1.0);
         let vector = vector(5.0, 6.0, 7.0);
         let result = sub_tuples(point, vector);
-        assert_eq!(result.x, -2.0);
-        assert_eq!(result.y, -4.0);
-        assert_eq!(result.z, -6.0);
-        assert_eq!(result.w, 1.0);
+        assert_eq!(result, Tuple { x: -2.0, y: -4.0, z: -6.0, w: 1.0 });
     }
 
     #[test]
@@ -137,10 +141,7 @@ mod tests {
         let vector1 = vector(3.0, 2.0, 1.0);
         let vector2 = vector(5.0, 6.0, 7.0);
         let result = sub_tuples(vector1, vector2);
-        assert_eq!(result.x, -2.0);
-        assert_eq!(result.y, -4.0);
-        assert_eq!(result.z, -6.0);
-        assert_eq!(result.w, 0.0);
+        assert_eq!(result, Tuple { x: -2.0, y: -4.0, z: -6.0, w: 0.0 });
     }
 
     #[test]
@@ -148,50 +149,35 @@ mod tests {
         let zero_vector = vector(0.0, 0.0, 0.0);
         let vector = vector(1.0, -2.0, 3.0);
         let result = sub_tuples(zero_vector, vector);
-        assert_eq!(result.x, -1.0);
-        assert_eq!(result.y, 2.0);
-        assert_eq!(result.z, -3.0);
+        assert_eq!(result, Tuple { x: -1.0, y: 2.0, z: -3.0, w: 0.0 });
     }
 
     #[test]
     fn test_negate_a_tuple() {
         let tuple : Tuple = Tuple { x: 1.0, y: -2.0, z: 3.0, w: -4.0 };
-        let negated_tuple : Tuple = negate(&tuple);
-
-        assert_eq!(-tuple.x, negated_tuple.x);
-        assert_eq!(-tuple.y, negated_tuple.y);
-        assert_eq!(-tuple.z, negated_tuple.z);
-        assert_eq!(-tuple.w, negated_tuple.w);
+        let result : Tuple = negate(&tuple);
+        assert_eq!(result, Tuple { x: -1.0, y: 2.0, z: -3.0, w: 4.0 });
     }
 
     #[test]
     fn test_multiply_a_tuple_by_a_scalar() {
         let tuple : Tuple = Tuple { x: 1.0, y: -2.0, z: 3.0, w: -4.0 };
         let result : Tuple = mult_scalar(3.5, &tuple);
-        assert_eq!(result.x, 3.5);
-        assert_eq!(result.y, -7.0);
-        assert_eq!(result.z, 10.5);
-        assert_eq!(result.w, -14.0);
+        assert_eq!(result, Tuple { x: 3.5, y: -7.0, z: 10.5, w: -14.0 });
     }
 
     #[test]
     fn test_multiply_a_tuple_by_a_fraction() {
         let tuple : Tuple = Tuple { x: 1.0, y: -2.0, z: 3.0, w: -4.0 };
         let result : Tuple = mult_scalar(0.5, &tuple);
-        assert_eq!(result.x, 0.5);
-        assert_eq!(result.y, -1.0);
-        assert_eq!(result.z, 1.5);
-        assert_eq!(result.w, -2.0);
+        assert_eq!(result, Tuple { x: 0.5, y: -1.0, z: 1.5, w: -2.0 });
     }
 
     #[test]
     fn test_divide_a_tuple_by_a_scalar() {
         let tuple : Tuple = Tuple { x: 1.0, y: -2.0, z: 3.0, w: -4.0 };
         let result : Tuple = div_scalar(2.0, &tuple);
-        assert_eq!(result.x, 0.5);
-        assert_eq!(result.y, -1.0);
-        assert_eq!(result.z, 1.5);
-        assert_eq!(result.w, -2.0);
+        assert_eq!(result, Tuple { x: 0.5, y: -1.0, z: 1.5, w: -2.0 });
     }
 
     #[test]
@@ -215,5 +201,22 @@ mod tests {
         let vector5 = vector(-1.0, -2.0, -3.0);
         let result5 = magnitude(&vector5);
         assert_eq!(result5, 14.0_f32.sqrt());
+    }
+
+    #[test]
+    fn test_dot_product() {
+        let vector1 = vector(1.0, 2.0, 3.0);
+        let vector2 = vector(2.0, 3.0, 4.0);
+
+        assert_eq!(dot(vector1, vector2), 20.0);
+    }
+
+    #[test]
+    fn test_cross_product() {
+        let vector1 = vector(1.0, 2.0, 3.0);
+        let vector2 = vector(2.0, 3.0, 4.0);
+
+        assert_eq!(cross(&vector1, &vector2), vector(-1.0, 2.0, -1.0));
+        assert_eq!(cross(&vector2, &vector1), vector(1.0, -2.0, 1.0));
     }
 }
