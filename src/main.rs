@@ -8,6 +8,7 @@ struct Tuple {
 }
 
 fn main() {
+    // TODO: create and call a tick function
 }
 
 fn point(x: f32, y: f32, z: f32) -> Tuple {
@@ -20,7 +21,7 @@ fn vector(x: f32, y: f32, z: f32) -> Tuple {
     return vector;
 }
 
-fn tuple_is_point(tuple: Tuple) -> bool {
+fn tuple_is_point(tuple: &Tuple) -> bool {
     // Returns true if the tuple is a point, false if it's a vector
     if tuple.w == 1.0 {
         return true;
@@ -32,7 +33,7 @@ fn tuple_is_point(tuple: Tuple) -> bool {
     panic!["This tuple is neither a point nor a vector!"];
 }
 
-fn add_tuples(tuple1: Tuple, tuple2: Tuple) -> Tuple {
+fn add_tuples(tuple1: &Tuple, tuple2: &Tuple) -> Tuple {
     let result: Tuple = Tuple {
         x: tuple1.x + tuple2.x,
         y: tuple1.y + tuple2.y,
@@ -43,7 +44,7 @@ fn add_tuples(tuple1: Tuple, tuple2: Tuple) -> Tuple {
     result
 }
 
-fn sub_tuples(tuple1: Tuple, tuple2: Tuple) -> Tuple {
+fn sub_tuples(tuple1: &Tuple, tuple2: &Tuple) -> Tuple {
     let result: Tuple = Tuple {
         x: tuple1.x - tuple2.x,
         y: tuple1.y - tuple2.y,
@@ -106,17 +107,17 @@ mod tests {
     #[test]
     fn test_tuple_is_point() {
         let point = point(4.3, -4.2, 3.1);
-        assert_eq!(tuple_is_point(point), true);
+        assert_eq!(tuple_is_point(&point), true);
 
         let vector = vector(4.3, -4.2, 3.1);
-        assert_eq!(tuple_is_point(vector), false);
+        assert_eq!(tuple_is_point(&vector), false);
     }
 
     #[test]
     fn test_add_tuples() {
         let point = point(3.0, -2.0, 5.0);
         let vector = vector(-2.0, 3.0, 1.0);
-        let result = add_tuples(point, vector);
+        let result = add_tuples(&point, &vector);
         assert_eq!(result, Tuple { x: 1.0, y: 1.0, z: 6.0, w: 1.0 });
     }
 
@@ -124,7 +125,7 @@ mod tests {
     fn test_subtract_points() {
         let point1 = point(3.0, 2.0, 1.0);
         let point2 = point(5.0, 6.0, 7.0);
-        let result = sub_tuples(point1, point2);
+        let result = sub_tuples(&point1, &point2);
         assert_eq!(result, Tuple { x: -2.0, y: -4.0, z: -6.0, w: 0.0 });
     }
 
@@ -132,7 +133,7 @@ mod tests {
     fn test_subtract_vector_from_point() {
         let point = point(3.0, 2.0, 1.0);
         let vector = vector(5.0, 6.0, 7.0);
-        let result = sub_tuples(point, vector);
+        let result = sub_tuples(&point, &vector);
         assert_eq!(result, Tuple { x: -2.0, y: -4.0, z: -6.0, w: 1.0 });
     }
 
@@ -140,7 +141,7 @@ mod tests {
     fn test_subtract_vectors() {
         let vector1 = vector(3.0, 2.0, 1.0);
         let vector2 = vector(5.0, 6.0, 7.0);
-        let result = sub_tuples(vector1, vector2);
+        let result = sub_tuples(&vector1, &vector2);
         assert_eq!(result, Tuple { x: -2.0, y: -4.0, z: -6.0, w: 0.0 });
     }
 
@@ -148,7 +149,7 @@ mod tests {
     fn test_subtracting_a_vector_from_a_zero_vector() {
         let zero_vector = vector(0.0, 0.0, 0.0);
         let vector = vector(1.0, -2.0, 3.0);
-        let result = sub_tuples(zero_vector, vector);
+        let result = sub_tuples(&zero_vector, &vector);
         assert_eq!(result, Tuple { x: -1.0, y: 2.0, z: -3.0, w: 0.0 });
     }
 
