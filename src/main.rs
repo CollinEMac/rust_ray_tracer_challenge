@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 #[derive(Debug)]
 #[derive(PartialEq)]
 struct Tuple {
@@ -8,7 +9,48 @@ struct Tuple {
 }
 
 fn main() {
-    // TODO: create and call a tick function
+    // let mut p = Projectile {
+    //     position: point(0.0, 1.0, 0.0),
+    //     velocity: normalize(&vector(1.0, 1.0, 0.0))
+    // };
+
+    // let e = Environment {
+    //     gravity: vector(0.0, -0.1, 0.0),
+    //     wind: vector(-0.01, 0.0, 0.0)
+    // };
+
+    // p = tick(&e, &p);
+    // println!("{:?}", p);
+
+    // p = tick(&e, &p);
+    // println!("{:?}", p);
+
+    // p = tick(&e, &p);
+    // println!("{:?}", p);
+}
+
+/// BEGIN: for tick function
+
+struct Environment {
+    gravity: Tuple,
+    wind: Tuple,
+}
+
+#[derive(Debug)]
+struct Projectile {
+    position: Tuple,
+    velocity: Tuple,
+}
+
+/// END: for tick functions
+
+fn tick(env: &Environment, proj: &Projectile) -> Projectile {
+    let position = add_tuples(&proj.position, &proj.velocity);
+    let mut velocity = add_tuples(&proj.velocity, &env.gravity);
+    // also have to add env.wind... currently can't add multiple things
+    velocity = add_tuples(&velocity, &env.wind);
+
+    Projectile { position: position, velocity: velocity }
 }
 
 fn point(x: f32, y: f32, z: f32) -> Tuple {
@@ -69,6 +111,16 @@ fn div_scalar(scalar: f32, tuple: &Tuple) -> Tuple {
 
 fn magnitude(vector: &Tuple) -> f32 {
     (vector.x.powf(2.0) + vector.y.powf(2.0) + vector.z.powf(2.0) + vector.w.powf(2.0)).sqrt()
+}
+
+fn normalize(vector: &Tuple) -> Tuple {
+    let mag = magnitude(vector);
+    Tuple {
+        x: vector.x / mag,
+        y: vector.y / mag,
+        z: vector.z / mag,
+        w: vector.w / mag
+    }
 }
 
 fn dot(tuple1: Tuple, tuple2: Tuple) -> f32 {
@@ -202,6 +254,12 @@ mod tests {
         let vector5 = vector(-1.0, -2.0, -3.0);
         let result5 = magnitude(&vector5);
         assert_eq!(result5, 14.0_f32.sqrt());
+    }
+
+    #[test]
+    fn test_normalize() {
+        let vec = vector(4.0, 0.0, 0.0);
+        assert_eq!(normalize(&vec), vector(1.0, 0.0, 0.0));
     }
 
     #[test]
