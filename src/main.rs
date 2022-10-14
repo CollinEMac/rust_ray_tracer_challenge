@@ -8,6 +8,17 @@ struct Tuple {
     w: f32,
 }
 
+/// I'll want to refactor this eventually. Colors should inherit from Tuples
+/// but inheritance doesn't exist in rust and it's all weird.
+
+#[derive(Debug)]
+#[derive(PartialEq)]
+struct Color {
+    red: f32,
+    green: f32,
+    blue: f32,
+}
+
 fn main() {
     // let mut p = Projectile {
     //     position: point(0.0, 1.0, 0.0),
@@ -31,28 +42,28 @@ fn main() {
 
 /// BEGIN: for tick function
 
-struct Environment {
-    gravity: Tuple,
-    wind: Tuple,
-}
+// struct Environment {
+//     gravity: Tuple,
+//     wind: Tuple,
+// }
 
-#[derive(Debug)]
-struct Projectile {
-    position: Tuple,
-    velocity: Tuple,
-}
+// #[derive(Debug)]
+// struct Projectile {
+//     position: Tuple,
+//     velocity: Tuple,
+// }
+
+// fn tick(env: &Environment, proj: &Projectile) -> Projectile {
+//     let position = add_tuples(&proj.position, &proj.velocity);
+//     let mut velocity = add_tuples(&proj.velocity, &env.gravity);
+//     // also have to add env.wind... currently can't add multiple things
+//     velocity = add_tuples(&velocity, &env.wind);
+
+//     Projectile { position: position, velocity: velocity }
+// }
 
 /// END: for tick functions
-
-fn tick(env: &Environment, proj: &Projectile) -> Projectile {
-    let position = add_tuples(&proj.position, &proj.velocity);
-    let mut velocity = add_tuples(&proj.velocity, &env.gravity);
-    // also have to add env.wind... currently can't add multiple things
-    velocity = add_tuples(&velocity, &env.wind);
-
-    Projectile { position: position, velocity: velocity }
-}
-
+///
 fn point(x: f32, y: f32, z: f32) -> Tuple {
     let point: Tuple = Tuple { x: x, y: y, z: z, w: 1.0 };
     return point;
@@ -61,6 +72,11 @@ fn point(x: f32, y: f32, z: f32) -> Tuple {
 fn vector(x: f32, y: f32, z: f32) -> Tuple {
     let vector: Tuple = Tuple { x: x, y: y, z: z, w: 0.0 };
     return vector;
+}
+
+fn color(red: f32, green: f32, blue: f32) -> Color {
+    let color: Color = Color { red: red, green: green, blue: blue};
+    color
 }
 
 fn tuple_is_point(tuple: &Tuple) -> bool {
@@ -86,6 +102,14 @@ fn add_tuples(tuple1: &Tuple, tuple2: &Tuple) -> Tuple {
     result
 }
 
+fn add_colors(color1: &Color, color2: &Color) -> Color {
+    Color {
+        red: ((color1.red + color2.red) * 10.0).round() / 10.0,
+        green: ((color1.green + color2.green) * 10.0).round() / 10.0,
+        blue: ((color1.blue + color2.blue) * 10.0).round() / 10.0,
+    }
+}
+
 fn sub_tuples(tuple1: &Tuple, tuple2: &Tuple) -> Tuple {
     let result: Tuple = Tuple {
         x: tuple1.x - tuple2.x,
@@ -97,12 +121,24 @@ fn sub_tuples(tuple1: &Tuple, tuple2: &Tuple) -> Tuple {
     result
 }
 
+fn sub_colors(color1: &Color, color2: &Color) -> Color {
+    Color {
+        red: ((color1.red - color2.red) * 10.0).round() / 10.0,
+        green: ((color1.green - color2.green) * 10.0).round() / 10.0,
+        blue: ((color1.blue - color2.blue) * 10.0).round() / 10.0,
+    }
+}
+
 fn negate(tuple: &Tuple) -> Tuple {
     Tuple { x: -tuple.x, y: -tuple.y, z: -tuple.z, w: -tuple.w }
 }
 
 fn mult_scalar(scalar: f32, tuple: &Tuple) -> Tuple {
     Tuple { x: scalar * tuple.x, y: scalar * tuple.y, z: scalar * tuple.z, w: scalar * tuple.w }
+}
+
+fn mult_color(scalar: f32, color: &Color) -> Color {
+    Color { red: scalar * color.red, green: scalar * color.green, blue: scalar * color.blue }
 }
 
 fn div_scalar(scalar: f32, tuple: &Tuple) -> Tuple {
@@ -157,6 +193,14 @@ mod tests {
     }
 
     #[test]
+    fn test_color() {
+        let new_color = color(-0.5, 0.4, 1.7);
+        assert_eq!(new_color.red, -0.5);
+        assert_eq!(new_color.green, 0.4);
+        assert_eq!(new_color.blue, 1.7);
+    }
+
+    #[test]
     fn test_tuple_is_point() {
         let point = point(4.3, -4.2, 3.1);
         assert_eq!(tuple_is_point(&point), true);
@@ -174,11 +218,25 @@ mod tests {
     }
 
     #[test]
+    fn test_add_colors() {
+        let color1 = color(0.9, 0.6, 0.75);
+        let color2 = color(0.7, 0.1, 0.25);
+        assert_eq!(add_colors(&color1, &color2), color(1.6, 0.7, 1.0));
+    }
+
+    #[test]
     fn test_subtract_points() {
         let point1 = point(3.0, 2.0, 1.0);
         let point2 = point(5.0, 6.0, 7.0);
         let result = sub_tuples(&point1, &point2);
         assert_eq!(result, Tuple { x: -2.0, y: -4.0, z: -6.0, w: 0.0 });
+    }
+
+    #[test]
+    fn test_subtract_colors() {
+        let color1 = color(0.9, 0.6, 0.75);
+        let color2 = color(0.7, 0.1, 0.25);
+        assert_eq!(sub_colors(&color1, &color2), color(0.2, 0.5, 0.5));
     }
 
     #[test]
@@ -219,6 +277,12 @@ mod tests {
         assert_eq!(result, Tuple { x: 3.5, y: -7.0, z: 10.5, w: -14.0 });
     }
 
+    #[test]
+    fn test_multiply_a_color_by_a_scalar() {
+        let new_color = color(0.2, 0.3, 0.4);
+        assert_eq!(mult_color(2.0, &new_color), color(0.4, 0.6, 0.8));
+    }
+    
     #[test]
     fn test_multiply_a_tuple_by_a_fraction() {
         let tuple : Tuple = Tuple { x: 1.0, y: -2.0, z: 3.0, w: -4.0 };
