@@ -145,6 +145,14 @@ fn mult_color(scalar: f32, color: &Color) -> Color {
     Color { red: scalar * color.red, green: scalar * color.green, blue: scalar * color.blue }
 }
 
+fn hadamard(color1: &Color, color2: &Color) -> Color {
+    Color {
+        red: round_number(color1.red * color2.red, 100.00),
+        green: round_number(color1.green * color2.green, 100.00),
+        blue: round_number(color1.blue * color2.blue, 100.00)
+    }
+}
+
 fn div_scalar(scalar: f32, tuple: &Tuple) -> Tuple {
     Tuple { x: tuple.x / scalar, y: tuple.y / scalar, z: tuple.z / scalar, w: tuple.w / scalar }
 }
@@ -299,6 +307,13 @@ mod tests {
         assert_eq!(mult_color(2.0, &new_color), color(0.4, 0.6, 0.8));
     }
     
+    #[test]
+    fn test_hadarmard_product() {
+        let color1 = color(1.0, 0.2, 0.4);
+        let color2 = color(0.9, 1.0, 0.1);
+        assert_eq!(hadamard(&color1, &color2), color(0.9, 0.2, 0.04));
+    }
+
     #[test]
     fn test_multiply_a_tuple_by_a_fraction() {
         let tuple : Tuple = Tuple { x: 1.0, y: -2.0, z: 3.0, w: -4.0 };
