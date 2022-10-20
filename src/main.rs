@@ -104,9 +104,9 @@ fn add_tuples(tuple1: &Tuple, tuple2: &Tuple) -> Tuple {
 
 fn add_colors(color1: &Color, color2: &Color) -> Color {
     Color {
-        red: ((color1.red + color2.red) * 10.0).round() / 10.0,
-        green: ((color1.green + color2.green) * 10.0).round() / 10.0,
-        blue: ((color1.blue + color2.blue) * 10.0).round() / 10.0,
+        red: round_number(color1.red + color2.red, 10.0),
+        green: round_number(color1.green + color2.green, 10.0),
+        blue: round_number(color1.blue + color2.blue, 10.0),
     }
 }
 
@@ -123,10 +123,14 @@ fn sub_tuples(tuple1: &Tuple, tuple2: &Tuple) -> Tuple {
 
 fn sub_colors(color1: &Color, color2: &Color) -> Color {
     Color {
-        red: ((color1.red - color2.red) * 10.0).round() / 10.0,
-        green: ((color1.green - color2.green) * 10.0).round() / 10.0,
-        blue: ((color1.blue - color2.blue) * 10.0).round() / 10.0,
+        red: round_number(color1.red - color2.red, 10.0),
+        green: round_number(color1.green - color2.green, 10.0),
+        blue: round_number(color1.blue - color2.blue, 10.0),
     }
+}
+
+fn round_number(float: f32, factor: f32) -> f32 {
+    (float * factor).round() / factor
 }
 
 fn negate(tuple: &Tuple) -> Tuple {
@@ -198,6 +202,18 @@ mod tests {
         assert_eq!(new_color.red, -0.5);
         assert_eq!(new_color.green, 0.4);
         assert_eq!(new_color.blue, 1.7);
+    }
+
+    #[test]
+    fn test_round_numbers() {
+        let mut rounded_number = round_number(123.456789, 10.0);
+        assert_eq!(rounded_number, 123.5);
+
+        rounded_number = round_number(123.456789, 100.0);
+        assert_eq!(rounded_number, 123.46);
+
+        rounded_number = round_number(123.456789, 0.01);
+        assert_eq!(rounded_number, 100.0);
     }
 
     #[test]
