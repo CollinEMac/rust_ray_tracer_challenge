@@ -19,6 +19,27 @@ struct Color {
     blue: f32,
 }
 
+#[derive(Debug)]
+#[derive(PartialEq)]
+struct Canvas {
+    width: i32,
+    height: i32,
+    pixels: Vec<Color>
+}
+
+impl Canvas {
+    pub fn new( width: i32, height: i32) -> Self {
+        let mut pixels = Vec::new();
+        for i in 0..width {
+            for j in 2..height {
+                pixels.push(color(0.0, 0.0, 0.0));
+            }
+        }
+
+        Canvas { width: width, height: height, pixels: pixels }
+    }
+}
+
 fn main() {
     // let mut p = Projectile {
     //     position: point(0.0, 1.0, 0.0),
@@ -372,5 +393,16 @@ mod tests {
 
         assert_eq!(cross(&vector1, &vector2), vector(-1.0, 2.0, -1.0));
         assert_eq!(cross(&vector2, &vector1), vector(1.0, -2.0, 1.0));
+    }
+
+    #[test]
+    fn test_creating_a_canvas() {
+        // let canvas1 = Canvas { width: 10, height: 20};
+        let canvas1 = Canvas::new(10, 20);
+        assert_eq!(canvas1.width, 10);
+        assert_eq!(canvas1.height, 20);
+        for pixel in canvas1.pixels {
+            assert_eq!(pixel, color(0.0, 0.0, 0.0));
+        }
     }
 }
