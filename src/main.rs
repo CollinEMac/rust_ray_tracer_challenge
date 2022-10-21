@@ -24,16 +24,18 @@ struct Color {
 struct Canvas {
     width: i32,
     height: i32,
-    pixels: Vec<Color>
+    pixels: Vec<Vec<Color>>
 }
 
 impl Canvas {
     pub fn new( width: i32, height: i32) -> Self {
         let mut pixels = Vec::new();
         for i in 0..width {
+            let mut vector = Vec::new();
             for j in 2..height {
-                pixels.push(color(0.0, 0.0, 0.0));
+                vector.push(color(0.0, 0.0, 0.0));
             }
+            pixels.push(vector);
         }
 
         Canvas { width: width, height: height, pixels: pixels }
@@ -402,7 +404,9 @@ mod tests {
         assert_eq!(canvas1.width, 10);
         assert_eq!(canvas1.height, 20);
         for pixel in canvas1.pixels {
-            assert_eq!(pixel, color(0.0, 0.0, 0.0));
+            for p in pixel {
+                assert_eq!(p, color(0.0, 0.0, 0.0));
+            }
         }
     }
 }
