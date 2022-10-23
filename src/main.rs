@@ -13,6 +13,7 @@ struct Tuple {
 
 #[derive(Debug)]
 #[derive(PartialEq)]
+#[derive(Copy, Clone)]
 struct Color {
     red: f32,
     green: f32,
@@ -30,15 +31,24 @@ struct Canvas {
 impl Canvas {
     pub fn new( width: i32, height: i32) -> Self {
         let mut pixels = Vec::new();
-        for i in 0..width {
+        for _i in 0..width {
             let mut vector = Vec::new();
-            for j in 2..height {
+            for _j in 2..height { // FIXME: Wait what the heck? 2?
                 vector.push(color(0.0, 0.0, 0.0));
             }
             pixels.push(vector);
         }
 
         Canvas { width: width, height: height, pixels: pixels }
+    }
+
+    pub fn write_pixel( &mut self, x: i32, y: i32, color: Color) -> &Self {
+        self.pixels[x as usize][y as usize] = color;
+        return self;
+    }
+
+    pub fn pixel_at( &self, x: i32, y: i32 ) -> Color {
+        self.pixels[x as usize][y as usize]
     }
 }
 
@@ -408,5 +418,13 @@ mod tests {
                 assert_eq!(p, color(0.0, 0.0, 0.0));
             }
         }
+    }
+
+    #[test]
+    fn test_writing_pixels_to_a_canvas() {
+        let mut canvas1 = Canvas::new(10, 20);
+        let red = color(1.0, 0.0, 0.0);
+        canvas1.write_pixel(2, 3, red);
+        assert_eq!(canvas1.pixel_at(2, 3), red);
     }
 }
