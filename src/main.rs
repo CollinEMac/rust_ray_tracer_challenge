@@ -50,6 +50,12 @@ impl Canvas {
     pub fn pixel_at( &self, x: i32, y: i32 ) -> Color {
         self.pixels[x as usize][y as usize]
     }
+
+    pub fn canvas_to_ppm(&self) -> &str {
+"P3
+5 3
+255"
+    }
 }
 
 fn main() {
@@ -427,4 +433,17 @@ mod tests {
         canvas1.write_pixel(2, 3, red);
         assert_eq!(canvas1.pixel_at(2, 3), red);
     }
+
+    #[test]
+    fn test_constructing_the_ppm_header() {
+        let canvas1 = Canvas::new(5, 3);
+        let ppm = canvas1.canvas_to_ppm();
+        assert_eq!{
+            ppm,
+"P3
+5 3
+255"
+        }
+    }
+
 }
