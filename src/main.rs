@@ -1,6 +1,11 @@
 #![allow(dead_code)]
 use math::round;
 
+const NEW_LINE : &str = "
+";
+
+const SPACE : &str= " ";
+
 #[derive(Debug)]
 #[derive(PartialEq)]
 struct Tuple {
@@ -60,46 +65,28 @@ impl Canvas {
 "P3
 "
         );
-
-        ppm.push_str(
-&self.width.to_string()
-        );
-
-        ppm.push_str(
-" "
-        );
-
-        ppm.push_str(
-&self.height.to_string()
-        );
-
+        ppm.push_str(&self.width.to_string());
+        ppm.push_str(SPACE);
+        ppm.push_str(&self.height.to_string());
         ppm.push_str(
 "
 255"
         );
 
         for i in 0..self.pixels.len() {
-            // Add a newline
-            ppm.push_str(
-"
-"
-            );
+            ppm.push_str(NEW_LINE);
 
             let mut curr_line_len = 0;
             for j in 0..self.pixels[i].len() {
 
                 let red = convert_color_to_255(self.pixels[i][j].red);
                 if curr_line_len + red.len() + 1 > 70 { // Plus 1 for the space
-                    // insert new line
-                    ppm.push_str(
-"
-"
-                    );
+                    ppm.push_str(NEW_LINE);
                     curr_line_len = 0;
                 } else {
                     // add a space before red if it's not at the start of a line
                     if j != 0 {
-                        ppm.push_str(" ");
+                        ppm.push_str(SPACE);
                     }
                 }
                 ppm.push_str(&red);
@@ -107,15 +94,11 @@ impl Canvas {
 
                 let green = convert_color_to_255(self.pixels[i][j].green);
                 if curr_line_len + green.len() + 1 > 70 {
-                    // insert new line
-                    ppm.push_str(
-"
-"
-                    );
+                    ppm.push_str(NEW_LINE);
                     curr_line_len = 0;
                 } else {
                     // add a space before green if it's not starting a line
-                    ppm.push_str(" ");
+                    ppm.push_str(SPACE);
                 }
                 ppm.push_str(&green);
                 curr_line_len = curr_line_len + green.len() + 1;
@@ -123,14 +106,11 @@ impl Canvas {
                 let blue = convert_color_to_255(self.pixels[i][j].blue);
                 if curr_line_len + blue.len() + 1 > 70 {
                     // insert new line
-                    ppm.push_str(
-"
-"
-                    );
+                    ppm.push_str(NEW_LINE);
                     curr_line_len = 0;
                 } else {
                     // Add a space before blue if it's not starting a new line
-                    ppm.push_str(" ");
+                    ppm.push_str(SPACE);
                 }
                 ppm.push_str(&blue);
                 curr_line_len = curr_line_len + blue.len() + 1;
@@ -138,11 +118,7 @@ impl Canvas {
         }
 
         // ppms should end with a new line
-
-        ppm.push_str(
-"
-"
-        );
+        ppm.push_str(NEW_LINE);
 
         ppm
     }
