@@ -31,9 +31,9 @@ struct Canvas {
 impl Canvas {
     pub fn new( width: i32, height: i32) -> Self {
         let mut pixels = Vec::new();
-        for _i in 0..width {
+        for _i in 0..height {
             let mut vector = Vec::new();
-            for _j in 2..height { // FIXME: Wait what the heck? 2?
+            for _j in 0..width {
                 vector.push(color(0.0, 0.0, 0.0));
             }
             pixels.push(vector);
@@ -43,12 +43,12 @@ impl Canvas {
     }
 
     pub fn write_pixel( &mut self, x: i32, y: i32, color: Color) -> &Self {
-        self.pixels[x as usize][y as usize] = color;
+        self.pixels[y as usize][x as usize] = color;
         return self;
     }
 
     pub fn pixel_at( &self, x: i32, y: i32 ) -> Color {
-        self.pixels[x as usize][y as usize]
+        self.pixels[y as usize][x as usize]
     }
 
     pub fn canvas_to_ppm(&self) -> &str {
