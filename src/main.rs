@@ -1,11 +1,13 @@
 #![allow(dead_code)]
+use math::round;
+
 #[derive(Debug)]
 #[derive(PartialEq)]
 struct Tuple {
-    x: f32,
-    y: f32,
-    z: f32,
-    w: f32,
+    x: f64,
+    y: f64,
+    z: f64,
+    w: f64,
 }
 
 /// I'll want to refactor this eventually. Colors should inherit from Tuples
@@ -15,9 +17,9 @@ struct Tuple {
 #[derive(PartialEq)]
 #[derive(Copy, Clone)]
 struct Color {
-    red: f32,
-    green: f32,
-    blue: f32,
+    red: f64,
+    green: f64,
+    blue: f64,
 }
 
 #[derive(Debug)]
@@ -51,11 +53,51 @@ impl Canvas {
         self.pixels[y as usize][x as usize]
     }
 
-    pub fn canvas_to_ppm(&self) -> &str {
+    pub fn canvas_to_ppm(&self) -> String {
+        let mut ppm = String::new();
+
+        ppm.push_str(
 "P3
 5 3
 255"
+        );
+
+        for i in 0..self.pixels.len() {
+            // Add a newline
+            ppm.push_str("
+");
+            for j in 0..self.pixels[i].len() {
+                ppm.push_str(&convert_color_to_255(self.pixels[i][j].red));
+                // always add a space after red
+                ppm.push_str(" ");
+
+                ppm.push_str(&convert_color_to_255(self.pixels[i][j].green));
+                // always add a space after green
+                ppm.push_str(" ");
+
+                ppm.push_str(&convert_color_to_255(self.pixels[i][j].blue));
+
+                // sometimes add a space after blue (if it isn't the last one)
+                if j != self.pixels[i].len() - 1 {
+                    ppm.push_str(" ");
+                }
+            }
+        }
+
+        ppm
     }
+}
+
+fn convert_color_to_255(color_value: f64) -> String {
+    let mut new_value: i32 = 255;
+
+    if color_value <= 0.0 {
+        new_value = 0;
+    } else if color_value < 1.0 && color_value > 0.0 {
+        new_value = round::half_up(color_value * 255.0, 0) as i32;
+    }
+
+    new_value.to_string()
 }
 
 fn main() {
@@ -103,17 +145,17 @@ fn main() {
 
 /// END: for tick functions
 ///
-fn point(x: f32, y: f32, z: f32) -> Tuple {
+fn point(x: f64, y: f64, z: f64) -> Tuple {
     let point: Tuple = Tuple { x: x, y: y, z: z, w: 1.0 };
     return point;
 }
 
-fn vector(x: f32, y: f32, z: f32) -> Tuple {
+fn vector(x: f64, y: f64, z: f64) -> Tuple {
     let vector: Tuple = Tuple { x: x, y: y, z: z, w: 0.0 };
     return vector;
 }
 
-fn color(red: f32, green: f32, blue: f32) -> Color {
+fn color(red: f64, green: f64, blue: f64) -> Color {
     let color: Color = Color { red: red, green: green, blue: blue};
     color
 }
@@ -168,7 +210,7 @@ fn sub_colors(color1: &Color, color2: &Color) -> Color {
     }
 }
 
-fn round_number(float: f32, factor: f32) -> f32 {
+fn round_number(float: f64, factor: f64) -> f64 {
     (float * factor).round() / factor
 }
 
@@ -176,11 +218,11 @@ fn negate(tuple: &Tuple) -> Tuple {
     Tuple { x: -tuple.x, y: -tuple.y, z: -tuple.z, w: -tuple.w }
 }
 
-fn mult_scalar(scalar: f32, tuple: &Tuple) -> Tuple {
+fn mult_scalar(scalar: f64, tuple: &Tuple) -> Tuple {
     Tuple { x: scalar * tuple.x, y: scalar * tuple.y, z: scalar * tuple.z, w: scalar * tuple.w }
 }
 
-fn mult_color(scalar: f32, color: &Color) -> Color {
+fn mult_color(scalar: f64, color: &Color) -> Color {
     Color { red: scalar * color.red, green: scalar * color.green, blue: scalar * color.blue }
 }
 
@@ -192,11 +234,11 @@ fn hadamard(color1: &Color, color2: &Color) -> Color {
     }
 }
 
-fn div_scalar(scalar: f32, tuple: &Tuple) -> Tuple {
+fn div_scalar(scalar: f64, tuple: &Tuple) -> Tuple {
     Tuple { x: tuple.x / scalar, y: tuple.y / scalar, z: tuple.z / scalar, w: tuple.w / scalar }
 }
 
-fn magnitude(vector: &Tuple) -> f32 {
+fn magnitude(vector: &Tuple) -> f64 {
     (vector.x.powf(2.0) + vector.y.powf(2.0) + vector.z.powf(2.0) + vector.w.powf(2.0)).sqrt()
 }
 
@@ -210,7 +252,7 @@ fn normalize(vector: &Tuple) -> Tuple {
     }
 }
 
-fn dot(tuple1: Tuple, tuple2: Tuple) -> f32 {
+fn dot(tuple1: Tuple, tuple2: Tuple) -> f64 {
     tuple1.x * tuple2.x + tuple1.y * tuple2.y + tuple1.z * tuple2.z + tuple1.w * tuple2.w
 }
 
@@ -383,11 +425,11 @@ mod tests {
 
         let vector4 = vector(1.0, 2.0, 3.0);
         let result4 = magnitude(&vector4);
-        assert_eq!(result4, 14.0_f32.sqrt());
+        assert_eq!(result4, 14.0_f64.sqrt());
 
         let vector5 = vector(-1.0, -2.0, -3.0);
         let result5 = magnitude(&vector5);
-        assert_eq!(result5, 14.0_f32.sqrt());
+        assert_eq!(result5, 14.0_f64.sqrt());
     }
 
     #[test]
@@ -435,14 +477,25 @@ mod tests {
     }
 
     #[test]
-    fn test_constructing_the_ppm_header() {
-        let canvas1 = Canvas::new(5, 3);
+    fn test_constructing_the_ppm_pixel_data() {
+        let mut canvas1 = Canvas::new(5, 3);
+        let color1 = color(1.5, 0.0, 0.0);
+        let color2 = color(0.0, 0.5, 0.0);
+        let color3 = color(-0.5, 0.0, 1.0);
+
+        canvas1.write_pixel(0, 0, color1);
+        canvas1.write_pixel(2, 1, color2);
+        canvas1.write_pixel(4, 2, color3);
+
         let ppm = canvas1.canvas_to_ppm();
-        assert_eq!{
+        assert_eq! {
             ppm,
 "P3
 5 3
-255"
+255
+255 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 128 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 255"
         }
     }
 
