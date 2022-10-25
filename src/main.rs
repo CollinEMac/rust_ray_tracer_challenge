@@ -80,25 +80,69 @@ impl Canvas {
 
         for i in 0..self.pixels.len() {
             // Add a newline
-            ppm.push_str("
-");
+            ppm.push_str(
+"
+"
+            );
+
+            let mut curr_line_len = 0;
             for j in 0..self.pixels[i].len() {
-                ppm.push_str(&convert_color_to_255(self.pixels[i][j].red));
-                // always add a space after red
-                ppm.push_str(" ");
 
-                ppm.push_str(&convert_color_to_255(self.pixels[i][j].green));
-                // always add a space after green
-                ppm.push_str(" ");
+                let red = convert_color_to_255(self.pixels[i][j].red);
+                if curr_line_len + red.len() + 1 > 70 { // Plus 1 for the space
+                    // insert new line
+                    ppm.push_str(
+"
+"
+                    );
+                    curr_line_len = 0;
+                } else {
+                    // add a space before red if it's not at the start of a line
+                    if j != 0 {
+                        ppm.push_str(" ");
+                    }
+                }
+                ppm.push_str(&red);
+                curr_line_len = curr_line_len + red.len() + 1;
 
-                ppm.push_str(&convert_color_to_255(self.pixels[i][j].blue));
-
-                // sometimes add a space after blue (if it isn't the last one)
-                if j != self.pixels[i].len() - 1 {
+                let green = convert_color_to_255(self.pixels[i][j].green);
+                if curr_line_len + green.len() + 1 > 70 {
+                    // insert new line
+                    ppm.push_str(
+"
+"
+                    );
+                    curr_line_len = 0;
+                } else {
+                    // add a space before green if it's not starting a line
                     ppm.push_str(" ");
                 }
+                ppm.push_str(&green);
+                curr_line_len = curr_line_len + green.len() + 1;
+
+                let blue = convert_color_to_255(self.pixels[i][j].blue);
+                if curr_line_len + blue.len() + 1 > 70 {
+                    // insert new line
+                    ppm.push_str(
+"
+"
+                    );
+                    curr_line_len = 0;
+                } else {
+                    // Add a space before blue if it's not starting a new line
+                    ppm.push_str(" ");
+                }
+                ppm.push_str(&blue);
+                curr_line_len = curr_line_len + blue.len() + 1;
             }
         }
+
+        // ppms should end with a new line
+
+        ppm.push_str(
+"
+"
+        );
 
         ppm
     }
@@ -495,30 +539,35 @@ mod tests {
 255
 255 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 128 0 0 0 0 0 0 0
-0 0 0 0 0 0 0 0 0 0 0 0 0 0 255"
+0 0 0 0 0 0 0 0 0 0 0 0 0 0 255
+"
         }
     }
 
-//     #[test]
-//     fn test_splitting_long_lines_in_ppm_files() {
-//         let mut canvas1 = Canvas::new(10, 2);
+    #[test]
+    fn test_splitting_long_lines_in_ppm_files() {
+        let mut canvas1 = Canvas::new(10, 2);
 
-//         // write this color to every pixel in the canvas;
-//         for i in 0..canvas1.pixels.len() {
-//             for j in 0..canvas1.pixels[i].len() {
-//                 canvas1.write_pixel(i as i32, j as i32, color(1.0, 0.8, 0.6));
-//             }
-//         }
+        // write this color to every pixel in the canvas;
+        for y in 0..canvas1.pixels.len() {
+            for x in 0..canvas1.pixels[y].len() {
+                canvas1.write_pixel(x as i32, y as i32, color(1.0, 0.8, 0.6));
+            }
+        }
 
-//         let ppm = canvas1.canvas_to_ppm();
+        let ppm = canvas1.canvas_to_ppm();
 
-//         assert_eq!{
-//             ppm,
-// "P3
-
-// "
-//         }
-
-//     }
+        assert_eq!{
+            ppm,
+"P3
+10 2
+255
+255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
+153 255 204 153 255 204 153 255 204 153 255 204 153
+255 204 153 255 204 153 255 204 153 255 204 153 255 204 153 255 204
+153 255 204 153 255 204 153 255 204 153 255 204 153
+"
+        }
+    }
 
 }
