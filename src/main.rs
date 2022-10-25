@@ -58,7 +58,23 @@ impl Canvas {
 
         ppm.push_str(
 "P3
-5 3
+"
+        );
+
+        ppm.push_str(
+&self.width.to_string()
+        );
+
+        ppm.push_str(
+" "
+        );
+
+        ppm.push_str(
+&self.height.to_string()
+        );
+
+        ppm.push_str(
+"
 255"
         );
 
@@ -482,5 +498,27 @@ mod tests {
 0 0 0 0 0 0 0 0 0 0 0 0 0 0 255"
         }
     }
+
+//     #[test]
+//     fn test_splitting_long_lines_in_ppm_files() {
+//         let mut canvas1 = Canvas::new(10, 2);
+
+//         // write this color to every pixel in the canvas;
+//         for i in 0..canvas1.pixels.len() {
+//             for j in 0..canvas1.pixels[i].len() {
+//                 canvas1.write_pixel(i as i32, j as i32, color(1.0, 0.8, 0.6));
+//             }
+//         }
+
+//         let ppm = canvas1.canvas_to_ppm();
+
+//         assert_eq!{
+//             ppm,
+// "P3
+
+// "
+//         }
+
+//     }
 
 }
