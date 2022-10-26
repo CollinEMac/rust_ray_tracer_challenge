@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 use math::round;
+use std::io::Write;
 
 const NEW_LINE : &str = "
 ";
@@ -137,47 +138,56 @@ fn convert_color_to_255(color_value: f64) -> String {
 }
 
 fn main() {
-    // let mut p = Projectile {
-    //     position: point(0.0, 1.0, 0.0),
-    //     velocity: normalize(&vector(1.0, 1.0, 0.0))
-    // };
+    let mut p = Projectile {
+        position: point(0.0, 1.0, 0.0),
+        velocity: mult_scalar(11.25, &normalize(&vector(1.0, 1.8, 0.0)))
+    };
 
-    // let e = Environment {
-    //     gravity: vector(0.0, -0.1, 0.0),
-    //     wind: vector(-0.01, 0.0, 0.0)
-    // };
+    let e = Environment {
+        gravity: vector(0.0, -0.1, 0.0),
+        wind: vector(-0.01, 0.0, 0.0)
+    };
 
-    // p = tick(&e, &p);
-    // println!("{:?}", p);
+    let mut c = Canvas::new(900, 550);
 
-    // p = tick(&e, &p);
-    // println!("{:?}", p);
+    p = tick(&e, &p);
 
-    // p = tick(&e, &p);
-    // println!("{:?}", p);
+    let red = color(1.0, 0.0, 0.0);
+    c.write_pixel(p.position.x as i32, p.position.y as i32, red);
+
+    for _i in 0..100 {
+        p = tick(&e, &p);
+        c.write_pixel(p.position.x as i32, p.position.y as i32, red);
+    }
+
+    let result = c.canvas_to_ppm();
+
+    let mut file_ref = std::fs::File::create("ppm.ppm").expect("create failed");
+
+    file_ref.write_all(result.as_bytes()).expect("write failed");
 }
 
 /// BEGIN: for tick function
 
-// struct Environment {
-//     gravity: Tuple,
-//     wind: Tuple,
-// }
+struct Environment {
+    gravity: Tuple,
+    wind: Tuple,
+}
 
-// #[derive(Debug)]
-// struct Projectile {
-//     position: Tuple,
-//     velocity: Tuple,
-// }
+#[derive(Debug)]
+struct Projectile {
+    position: Tuple,
+    velocity: Tuple,
+}
 
-// fn tick(env: &Environment, proj: &Projectile) -> Projectile {
-//     let position = add_tuples(&proj.position, &proj.velocity);
-//     let mut velocity = add_tuples(&proj.velocity, &env.gravity);
-//     // also have to add env.wind... currently can't add multiple things
-//     velocity = add_tuples(&velocity, &env.wind);
+fn tick(env: &Environment, proj: &Projectile) -> Projectile {
+    let position = add_tuples(&proj.position, &proj.velocity);
+    let mut velocity = add_tuples(&proj.velocity, &env.gravity);
+    // also have to add env.wind... currently can't add multiple things
+    velocity = add_tuples(&velocity, &env.wind);
 
-//     Projectile { position: position, velocity: velocity }
-// }
+    Projectile { position: position, velocity: velocity }
+}
 
 /// END: for tick functions
 ///
