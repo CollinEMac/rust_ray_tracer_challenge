@@ -318,8 +318,8 @@ fn mult_matrix(a: &Vec<Vec<f64>>, b: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
         let mut m_row = Vec::new();
         for column in 0..length {
             let mut m_item : f64 = 0.0;
-            /// i'm doing it this way as opposed to the code in teh book in
-            /// order to handle any size of matrices
+            // i'm doing it this way as opposed to the code in teh book in
+            // order to handle any size of matrices
             for item in 0..length {
                 m_item = m_item + a[row][item] * b[item][column];
             }
@@ -330,6 +330,17 @@ fn mult_matrix(a: &Vec<Vec<f64>>, b: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
     }
 
     return m;
+}
+
+fn mult_matrix_and_tuple(a: &Vec<Vec<f64>>, b: &Tuple) -> Tuple {
+    let mut result = Tuple{ x: 0.0, y: 0.0, z: 0.0, w: 0.0 };
+
+    result.x = a[0][0] * b.x + a[0][1] * b.y + a[0][2] * b.z + a[0][3] * b.w;
+    result.y = a[1][0] * b.x + a[1][1] * b.y + a[1][2] * b.z + a[1][3] * b.w;
+    result.z = a[2][0] * b.x + a[2][1] * b.y + a[2][2] * b.z + a[2][3] * b.w;
+    result.w = a[3][0] * b.x + a[3][1] * b.y + a[3][2] * b.z + a[3][3] * b.w;
+
+    result
 }
 
 #[cfg(test)]
@@ -663,5 +674,22 @@ mod tests {
         ];
 
         assert_eq!(mult_matrix(&a, &b), result);
+    }
+
+    #[test]
+    fn test_multiply_a_matrix_by_a_tuple() {
+        let a = vec![
+            vec![1.0, 2.0, 3.0, 4.0],
+            vec![2.0, 4.0, 4.0, 2.0],
+            vec![8.0, 6.0, 4.0, 1.0],
+            vec![0.0, 0.0, 0.0, 1.0]
+        ];
+
+        let b = Tuple{ x: 1.0, y: 2.0, z: 3.0, w: 1.0};
+
+        assert_eq!(
+            mult_matrix_and_tuple(&a, &b),
+            Tuple{ x: 18.0, y: 24.0, z: 33.0, w: 1.0}
+        );
     }
 }
