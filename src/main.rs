@@ -305,6 +305,33 @@ fn cross(vector1: &Tuple, vector2: &Tuple) -> Tuple {
         )
 }
 
+fn mult_matrix(a: &Vec<Vec<f64>>, b: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    // multiply 2 matrices
+
+    let length = a.len();
+
+    // let's just assume length of a and b are the same.
+
+    let mut m = Vec::new();
+
+    for row in 0..length {
+        let mut m_row = Vec::new();
+        for column in 0..length {
+            let mut m_item : f64 = 0.0;
+            /// i'm doing it this way as opposed to the code in teh book in
+            /// order to handle any size of matrices
+            for item in 0..length {
+                m_item = m_item + a[row][item] * b[item][column];
+            }
+
+            m_row.push(m_item);
+        }
+        m.push(m_row);
+    }
+
+    return m;
+}
+
 #[cfg(test)]
 mod tests {
     use super:: *;
@@ -610,5 +637,31 @@ mod tests {
         ];
 
         assert_ne!(a, b);
+    }
+
+    #[test]
+    fn test_multiply_two_matrices() {
+        let a = vec![
+            vec![1.0, 2.0, 3.0, 4.0],
+            vec![5.0, 6.0, 7.0, 8.0],
+            vec![9.0, 8.0, 7.0, 6.0],
+            vec![5.0, 4.0, 3.0, 2.0]
+        ];
+
+        let b = vec![
+            vec![-2.0, 1.0, 2.0, 3.0],
+            vec![3.0, 2.0, 1.0, -1.0],
+            vec![4.0, 3.0, 6.0, 5.0],
+            vec![1.0, 2.0, 7.0, 8.0]
+        ];
+
+        let result = vec![
+            vec![20.0, 22.0, 50.0, 48.0],
+            vec![44.0, 54.0, 114.0, 108.0],
+            vec![40.0, 58.0, 110.0, 102.0],
+            vec![16.0, 26.0, 46.0, 42.0]
+        ];
+
+        assert_eq!(mult_matrix(&a, &b), result);
     }
 }
