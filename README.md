@@ -1,0 +1,1 @@
+Following the The Ray Tracer Challenge by Jamis Buck
