@@ -374,6 +374,27 @@ fn determinant(a: &Vec<Vec<f64>>) -> f64 {
     a[0][0] * a[1][1] - a[0][1] * a[1][0]
 }
 
+fn submatrix(a: &Vec<Vec<f64>>, row: i32, column: i32) -> Vec<Vec<f64>> {
+    // Remove the given row and column from the matrix
+
+    let length = a.len();
+    let mut m = Vec::new();
+
+    for r in 0..length {
+        if r as i32 != row {
+            let mut m_row = Vec::new();
+            for c in 0..length {
+                if c as i32 != column {
+                    m_row.push(a[r][c]);
+                }
+            }
+            m.push(m_row);
+        }
+    }
+
+    return m;
+}
+
 #[cfg(test)]
 mod tests {
     use super:: *;
@@ -775,5 +796,39 @@ mod tests {
         ];
 
         assert_eq!(determinant(&a), 17.0);
+    }
+
+    #[test]
+    fn test_submatrix_of_a_3x3_matrix() {
+        let a = vec![
+            vec![1.0, 5.0, 0.0],
+            vec![-3.0, 2.0, 7.0],
+            vec![0.0, 6.0, -3.0]
+        ];
+
+        let result = vec![
+            vec![-3.0, 2.0],
+            vec![0.0, 6.0]
+        ];
+
+        assert_eq!(submatrix(&a, 0, 2), result);
+    }
+
+    #[test]
+    fn test_submatrix_of_a_4x4_matrix() {
+        let a = vec![
+            vec![-6.0, 1.0, 1.0, 6.0],
+            vec![-8.0, 5.0, 8.0, 6.0],
+            vec![-1.0, 0.0, 8.0, 2.0],
+            vec![-7.0, 1.0, -1.0, 1.0]
+        ];
+
+        let result = vec![
+            vec![-6.0, 1.0, 6.0],
+            vec![-8.0, 8.0, 6.0],
+            vec![-7.0, -1.0, 1.0]
+        ];
+
+        assert_eq!(submatrix(&a, 2, 1), result);
     }
 }
