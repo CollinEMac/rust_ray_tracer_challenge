@@ -305,6 +305,17 @@ fn cross(vector1: &Tuple, vector2: &Tuple) -> Tuple {
         )
 }
 
+fn identity_matrix() -> Vec<Vec<f64>> {
+    // Create the identity matrix
+
+    vec![
+        vec![1.0, 0.0, 0.0, 0.0],
+        vec![0.0, 1.0, 0.0, 0.0],
+        vec![0.0, 0.0, 1.0, 0.0],
+        vec![0.0, 0.0, 0.0, 1.0]
+    ]
+}
+
 fn mult_matrix(a: &Vec<Vec<f64>>, b: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
     // multiply 2 matrices
 
@@ -341,6 +352,22 @@ fn mult_matrix_and_tuple(a: &Vec<Vec<f64>>, b: &Tuple) -> Tuple {
     result.w = a[3][0] * b.x + a[3][1] * b.y + a[3][2] * b.z + a[3][3] * b.w;
 
     result
+}
+
+fn transpose(a: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    let length = a.len();
+
+    let mut m = Vec::new();
+
+    for row in 0..length {
+        let mut m_row = Vec::new();
+        for column in 0..length {
+            m_row.push(a[column][row])
+        }
+        m.push(m_row);
+    }
+    
+    return m;
 }
 
 #[cfg(test)]
@@ -702,27 +729,37 @@ mod tests {
             vec![4.0, 8.0, 16.0, 32.0]
         ];
 
-        let identity = vec![
-            vec![1.0, 0.0, 0.0, 0.0],
-            vec![0.0, 1.0, 0.0, 0.0],
-            vec![0.0, 0.0, 1.0, 0.0],
-            vec![0.0, 0.0, 0.0, 1.0]
-        ];
-
-        assert_eq!(a, mult_matrix(&a, &identity));
+        assert_eq!(a, mult_matrix(&a, &identity_matrix()));
     }
 
     #[test]
     fn test_multiply_a_tuple_by_the_identity_matrix() {
         let a = Tuple { x: 1.0, y: 2.0, z: 3.0, w: 4.0 };
 
-        let identity = vec![
-            vec![1.0, 0.0, 0.0, 0.0],
-            vec![0.0, 1.0, 0.0, 0.0],
-            vec![0.0, 0.0, 1.0, 0.0],
-            vec![0.0, 0.0, 0.0, 1.0]
+        assert_eq!(a, mult_matrix_and_tuple(&identity_matrix(), &a));
+    }
+
+    #[test]
+    fn test_transposing_a_matrix() {
+        let a = vec![
+            vec![0.0, 9.0, 3.0, 0.0],
+            vec![9.0, 8.0, 0.0, 8.0],
+            vec![1.0, 8.0, 5.0, 3.0],
+            vec![0.0, 0.0, 5.0, 8.0]
         ];
 
-        assert_eq!(a, mult_matrix_and_tuple(&identity, &a));
+        let result = vec![
+            vec![0.0, 9.0, 1.0, 0.0],
+            vec![9.0, 8.0, 8.0, 0.0],
+            vec![3.0, 0.0, 5.0, 5.0],
+            vec![0.0, 8.0, 3.0, 8.0]
+        ];
+
+        assert_eq!(transpose(&a), result);
+    }
+
+    #[test]
+    fn test_transposing_the_identity_matrix() {
+        assert_eq!(identity_matrix(), transpose(&identity_matrix()));
     }
 }
