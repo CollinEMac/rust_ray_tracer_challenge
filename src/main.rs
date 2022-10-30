@@ -370,6 +370,10 @@ fn transpose(a: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
     return m;
 }
 
+fn determinant(a: &Vec<Vec<f64>>) -> f64 {
+    a[0][0] * a[1][1] - a[0][1] * a[1][0]
+}
+
 #[cfg(test)]
 mod tests {
     use super:: *;
@@ -761,5 +765,15 @@ mod tests {
     #[test]
     fn test_transposing_the_identity_matrix() {
         assert_eq!(identity_matrix(), transpose(&identity_matrix()));
+    }
+
+    #[test]
+    fn test_calculating_the_determinant_of_2x2_matrix() {
+        let a = vec![
+            vec![1.0, 5.0],
+            vec![-3.0, 2.0]
+        ];
+
+        assert_eq!(determinant(&a), 17.0);
     }
 }
