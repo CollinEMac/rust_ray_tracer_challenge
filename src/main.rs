@@ -692,4 +692,37 @@ mod tests {
             Tuple{ x: 18.0, y: 24.0, z: 33.0, w: 1.0}
         );
     }
+
+    #[test]
+    fn test_multiply_a_matrix_by_the_identity_matrix() {
+        let a = vec![
+            vec![0.0, 1.0, 2.0, 4.0],
+            vec![1.0, 2.0, 4.0, 8.0],
+            vec![2.0, 4.0, 8.0, 16.0],
+            vec![4.0, 8.0, 16.0, 32.0]
+        ];
+
+        let identity = vec![
+            vec![1.0, 0.0, 0.0, 0.0],
+            vec![0.0, 1.0, 0.0, 0.0],
+            vec![0.0, 0.0, 1.0, 0.0],
+            vec![0.0, 0.0, 0.0, 1.0]
+        ];
+
+        assert_eq!(a, mult_matrix(&a, &identity));
+    }
+
+    #[test]
+    fn test_multiply_a_tuple_by_the_identity_matrix() {
+        let a = Tuple { x: 1.0, y: 2.0, z: 3.0, w: 4.0 };
+
+        let identity = vec![
+            vec![1.0, 0.0, 0.0, 0.0],
+            vec![0.0, 1.0, 0.0, 0.0],
+            vec![0.0, 0.0, 1.0, 0.0],
+            vec![0.0, 0.0, 0.0, 1.0]
+        ];
+
+        assert_eq!(a, mult_matrix_and_tuple(&identity, &a));
+    }
 }
