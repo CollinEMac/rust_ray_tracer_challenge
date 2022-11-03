@@ -395,6 +395,11 @@ fn submatrix(a: &Vec<Vec<f64>>, row: i32, column: i32) -> Vec<Vec<f64>> {
     return m;
 }
 
+fn minor(a: &Vec<Vec<f64>>, row: i32, column: i32) -> f64 {
+    let b = submatrix(&a, row, column);
+    return determinant(&b);
+}
+
 #[cfg(test)]
 mod tests {
     use super:: *;
@@ -830,5 +835,18 @@ mod tests {
         ];
 
         assert_eq!(submatrix(&a, 2, 1), result);
+    }
+
+    #[test]
+    fn test_determine_the_minor_of_a_3x3_matrix() {
+        let a = vec![
+            vec![3.0, 5.0, 0.0],
+            vec![2.0, -1.0, -7.0],
+            vec![6.0, -1.0, 5.0]
+        ];
+
+        let b = submatrix(&a, 1, 0);
+
+        assert_eq!(minor(&a, 1, 0), determinant(&b));
     }
 }
