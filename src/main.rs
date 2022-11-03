@@ -400,6 +400,15 @@ fn minor(a: &Vec<Vec<f64>>, row: i32, column: i32) -> f64 {
     return determinant(&b);
 }
 
+fn cofactor(a: &Vec<Vec<f64>>, row: i32, column: i32) -> f64 {
+    let minor = minor(&a, row, column);
+    if (row + column) & 1 == 1 {
+        // row + column is an odd number and the minor should be negated
+        return -minor;
+    }
+    return minor;
+}
+
 #[cfg(test)]
 mod tests {
     use super:: *;
@@ -848,5 +857,19 @@ mod tests {
         let b = submatrix(&a, 1, 0);
 
         assert_eq!(minor(&a, 1, 0), determinant(&b));
+    }
+
+    #[test]
+    fn test_calculating_a_cofactor_of_a_3x3_matrix() {
+        let a = vec![
+            vec![3.0, 5.0, 0.0],
+            vec![2.0, -1.0, -7.0],
+            vec![6.0, -1.0, 5.0]
+        ];
+
+        assert_eq!(minor(&a, 0, 0), -12.0);
+        assert_eq!(cofactor(&a, 0, 0), -12.0);
+        assert_eq!(minor(&a, 1, 0), 25.0);
+        assert_eq!(cofactor(&a, 1, 0), -25.0)
     }
 }
