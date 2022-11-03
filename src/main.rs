@@ -371,7 +371,19 @@ fn transpose(a: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
 }
 
 fn determinant(a: &Vec<Vec<f64>>) -> f64 {
-    a[0][0] * a[1][1] - a[0][1] * a[1][0]
+    let length = a[0].len();
+
+    if length == 2 {
+        return a[0][0] * a[1][1] - a[0][1] * a[1][0];
+    }
+
+    let mut det : f64= 0.0;
+
+    for i in 0..length {
+        det = det + a[0][i] * cofactor(&a, 0, i as i32);
+    }
+
+    return det
 }
 
 fn submatrix(a: &Vec<Vec<f64>>, row: i32, column: i32) -> Vec<Vec<f64>> {
@@ -871,5 +883,35 @@ mod tests {
         assert_eq!(cofactor(&a, 0, 0), -12.0);
         assert_eq!(minor(&a, 1, 0), 25.0);
         assert_eq!(cofactor(&a, 1, 0), -25.0)
+    }
+
+    #[test]
+    fn test_calculating_the_determinant_of_3x3_matrix () {
+        let a = vec![
+            vec![1.0, 2.0, 6.0],
+            vec![-5.0, 8.0, -4.0],
+            vec![2.0, 6.0, 4.0]
+        ];
+
+        assert_eq!(cofactor(&a, 0, 0), 56.0);
+        assert_eq!(cofactor(&a, 0, 1), 12.0);
+        assert_eq!(cofactor(&a, 0, 2), -46.0);
+        assert_eq!(determinant(&a), -196.0)
+    }
+
+    #[test]
+    fn test_calculating_the_determinant_of_4x4_matrix () {
+        let a = vec![
+            vec![-2.0,-8.0, 3.0, 5.0],
+            vec![-3.0, 1.0, 7.0, 3.0],
+            vec![1.0, 2.0, -9.0, 6.0],
+            vec![-6.0, 7.0, 7.0, -9.0]
+        ];
+
+        assert_eq!(cofactor(&a, 0, 0), 690.0);
+        assert_eq!(cofactor(&a, 0, 1), 447.0);
+        assert_eq!(cofactor(&a, 0, 2), 210.0);
+        assert_eq!(cofactor(&a, 0, 3), 51.0);
+        assert_eq!(determinant(&a), -4071.0);
     }
 }
