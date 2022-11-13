@@ -421,6 +421,14 @@ fn cofactor(a: &Vec<Vec<f64>>, row: i32, column: i32) -> f64 {
     return minor;
 }
 
+fn is_invertible(a: &Vec<Vec<f64>>) -> bool {
+    if determinant(a) == 0.0 {
+        false
+    } else {
+        true
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super:: *;
@@ -886,7 +894,7 @@ mod tests {
     }
 
     #[test]
-    fn test_calculating_the_determinant_of_3x3_matrix () {
+    fn test_calculating_the_determinant_of_3x3_matrix() {
         let a = vec![
             vec![1.0, 2.0, 6.0],
             vec![-5.0, 8.0, -4.0],
@@ -900,7 +908,7 @@ mod tests {
     }
 
     #[test]
-    fn test_calculating_the_determinant_of_4x4_matrix () {
+    fn test_calculating_the_determinant_of_4x4_matrix() {
         let a = vec![
             vec![-2.0,-8.0, 3.0, 5.0],
             vec![-3.0, 1.0, 7.0, 3.0],
@@ -913,5 +921,18 @@ mod tests {
         assert_eq!(cofactor(&a, 0, 2), 210.0);
         assert_eq!(cofactor(&a, 0, 3), 51.0);
         assert_eq!(determinant(&a), -4071.0);
+    }
+
+    #[test]
+    fn test_an_invertible_matrix_for_invertibility() {
+        let a = vec![
+            vec![6.0, 4.0, 4.0, 4.0],
+            vec![5.0, 5.0, 7.0, 6.0],
+            vec![4.0, -9.0, 3.0, -7.0],
+            vec![9.0, 1.0, 7.0, -6.0]
+        ];
+
+        assert_eq!(determinant(&a), -2120.0);
+        assert_eq!(is_invertible(&a), true);
     }
 }
