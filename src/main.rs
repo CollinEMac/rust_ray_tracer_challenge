@@ -429,6 +429,25 @@ fn is_invertible(a: &Vec<Vec<f64>>) -> bool {
     }
 }
 
+fn inverse(a: &Vec<Vec<f64>>) -> Vec<Vec<f64>> {
+    if is_invertible(a) == false {
+        panic!("This matrix is not inversible");
+    }
+
+    let mut b = a.to_vec();
+    let length = b.len();
+
+    for r in 0..length {
+        for c in 0..length {
+            let col = cofactor(&a, r as i32, c as i32);
+
+            b[c][r] = round::half_up(col / determinant(&a), 5);
+        }
+    }
+
+    return b;
+}
+
 #[cfg(test)]
 mod tests {
     use super:: *;
@@ -924,7 +943,7 @@ mod tests {
     }
 
     #[test]
-    fn test_an_invertible_matrix_for_invertibility() {
+    fn test_a_non_invertible_matrix_for_invertibility() {
         let a = vec![
             vec![6.0, 4.0, 4.0, 4.0],
             vec![5.0, 5.0, 7.0, 6.0],
@@ -934,5 +953,45 @@ mod tests {
 
         assert_eq!(determinant(&a), -2120.0);
         assert_eq!(is_invertible(&a), true);
+    }
+
+    #[test]
+    fn test_an_invertible_matrix_for_invertibility() {
+        let a = vec![
+            vec![-4.0, 2.0, -2.0, -3.0],
+            vec![9.0, 6.0, 2.0, 6.0],
+            vec![0.0, -5.0, 1.0, -5.0],
+            vec![0.0, 0.0, 0.0, 0.0]
+        ];
+
+        assert_eq!(determinant(&a), 0.0);
+        assert_eq!(is_invertible(&a), false);
+    }
+
+    #[test]
+    fn test_calculating_the_inverse() {
+        let a = vec![
+            vec![-5.0, 2.0, 6.0, -8.0],
+            vec![1.0, -5.0, 1.0, 8.0],
+            vec![7.0, 7.0, -6.0, -7.0],
+            vec![1.0, -3.0, 7.0, 4.0]
+        ];
+
+        let b = inverse(&a);
+
+        assert_eq!(determinant(&a), 532.0);
+        assert_eq!(cofactor(&a, 2, 3), -160.0);
+        assert_eq!(b[3][2], round::half_up(-160.0/532.0, 5));
+        assert_eq!(cofactor(&a, 3, 2), 105.0);
+        assert_eq!(b[2][3], round::half_up(105.0/532.0, 5));
+        assert_eq!(
+            b,
+            vec![
+                vec![0.21805, 0.45113, 0.24060, -0.04511],
+                vec![-0.80827, -1.45677, -0.44361, 0.52068],
+                vec![-0.07895, -0.22368, -0.05263, 0.19737],
+                vec![-0.52256, -0.81391, -0.30075, 0.30639]
+            ]
+        );
     }
 }
